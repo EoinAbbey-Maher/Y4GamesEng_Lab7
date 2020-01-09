@@ -12,24 +12,31 @@ public class BurgerJoint {
 		
 		public static int num = 0;
 
+		// Creation Of Burger
 		public void produce(){
-			System.out.println("Producer Produced Burger no. " + num); 
+			synchronized(this)
+			{
+				System.out.println("Producer Produced Burger no. " + num); 
 		
-			notify();
+				//notifies second thread of Completion
+				notify();
 
-			//Thread.sleep(1000);
+			}
 			
 		}
 
+		//Consumption Of Burger
 		public void consume()
 		{
-			System.out.println("Consumer Consumed Burger no. " + num);
+			synchronized(this)
+			{
+				System.out.println("Consumer Consumed Burger no. " + num);
 
-			notify();
+				//notifies first thread of Completion
+				notify();
 
-			num++;
-			//Thread.sleep(1000);
-
+				num++;
+			}
 			
 		}
 
@@ -45,28 +52,27 @@ public class BurgerJoint {
 		public void run(){
 			System.out.println("Producer Starting");
 			while(p < n){
-				while(p != c){
-					//System.out.println("Short order cook spinning");
-				}
-				Burger burg = new Burger();
-				//System.out.println("Making a Burger: " + p);
-				try{
-					burg.produce();
-				}
-				catch(Exception e)
+				synchronized(this)
 				{
-					e.printStackTrace();
-				}
-				burgerBuf = burg;
-				//buf = a;
-				p = p + 1;
-				
-				try{
-				Thread.sleep(1000);
-				}
-				catch(Exception e)
-				{
+					while(p != c){
+					}
+					Burger burg = new Burger();
+					try{
+						burg.produce();
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					burgerBuf = burg;
+					p = p + 1;
+					try{
+					Thread.sleep(1000);
+					}
+					catch(Exception e)
+					{
 					
+					}
 				}
 			}
 			System.out.println("Finished Making Burgers");
@@ -82,23 +88,23 @@ public class BurgerJoint {
 		public void run(){
 			System.out.println("Consumer Starting");
 			while(c < n){
-				while(p <= c){
-					//System.out.println("Starving waiting on a burger!");
-				}
-				//System.out.println("Eating Burger: " + c);
-				bufferBurg = burgerBuf;
-
-				bufferBurg.consume();
-				c = c + 1;
-				try{
-				Thread.sleep(1000);
-				}
-				catch(Exception e)
+				synchronized(this)
 				{
+					while(p <= c){
+					}
+					bufferBurg = burgerBuf;
 
+					bufferBurg.consume();
+					c = c + 1;
+					try{
+					Thread.sleep(1000);
+					}
+					catch(Exception e)
+					{
+
+					}		
 				}
 			}
-
 			System.out.println("Finished Making Burgers");
 		}
 	}
